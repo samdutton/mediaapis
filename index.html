@@ -1,0 +1,1812 @@
+<!--
+Google IO 2012/2013 HTML5 Slide Template
+
+Authors: Eric Bidelman <ebidel@gmail.com>
+         Luke Mahé <lukem@google.com>
+
+URL: https://code.google.com/p/io-2012-slides
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Introduction to WebRTC</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+<slide class="logoslide nobackground">
+  <article class="flexbox vcenter">
+    <div style='margin: 0 0 2em 0'><img src="images/google_developers_logo.png" alt="Google developers logo"></div>
+<!--     <div>Move forward and back with the arrow keys</div>
+ -->  </article>
+</slide>
+
+<slide class="title-slide segue nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+  <hgroup class="auto-fadein">
+    <h1 data-config-title><!-- populated from slide_config.json --></h1>
+    <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+    <p data-config-presenter><!-- populated from slide_config.json --></p>
+<!--     <p><a href="http://twitter.com/sw12" title="Sam Dutton on Twitter">@sw12</a></p>
+ -->  </hgroup>
+  <aside class="note"><p>Good evening!  I'm Chris Wilson, I'm a developer advocate on the Chrome team, and together with Ben and Dan later in the evening, we're here to talk about plug-free realtime communications on the web, with WebRTC!
+  </p></aside>
+</slide>
+
+<!-- <slide class="nobackground">
+  <hgroup>
+    <h2>Watch this presentation on YouTube</h2>
+  </hgroup>
+  <article>
+    <iframe  width="730" style="width: 730px;" src="http://www.youtube.com/embed/xxxxxx"></iframe>
+  </article>
+</slide> -->
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class='big'><a href="http://webrtcintro.appspot.com" title="These slides online">webrtcintro.appspot.com</a></div>
+    </article>
+    <aside class="note">
+      Before I get going - this deck is live on the web, so you can follow along or refer to it later.
+    <p>I'm going to lay out the fundamentals of WebRTC, including showing you what you can build with WebRTC and how, and leave some huge areas of detail to Ben and Dan.  But first, I wanted to begin by explaining some of the context of the WebRTC project.</p>
+    </aside>
+</slide>
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style='font-size: 2em'><a href="https://github.com/samdutton/webrtcintro" title="Github repository for these slides">github.com/samdutton/webrtcintro</a></div>
+    </article>
+    <aside class="note">
+    <p>Patches and issues welcome!</p>
+    </aside>
+</slide>
+ -->
+<slide class="segue dark quote nobackground">
+  <aside class="gdbar right bottom"><img src="images/google_developers_icon_128.png"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <h3>Real-time communication built into the browser</h3>
+    <hr>
+    <q>WebRTC is a new front in the long war for an open and unencumbered web</q>
+    <div class="author">
+      Brendan Eich<br>
+      &ndash; Mozilla CTO and inventor of JavaScript
+    </div>
+  </article>
+  <aside class="note">
+    <p>WebRTC is a collaboration to build real time communication into web browsers.</p>
+    <p>It's really a response to the demand for realtime communication features in the open web - without plugins or proprietary codecs, free for users and developers to use.</p>
+    <p>This has been a big missing feature in the web platform.</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class='big'><a href="https://apprtc.appspot.com/">Peer to peer</a></div>
+    </article>
+    <aside class="note">
+      <p>And right up front, I want to be clear that WebRTC is about peer-to-peer communications.</p>
+      <p>To demonstrate that, I wanted to introduce one of my peers, who many of you may recognize from the last meetup...
+    </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class='big'><img src="images/no.png" alt="RTC via a server" style='max-width: 100%' /></div>
+    </article>
+    <aside class="note">
+      <p>In the past, a lot of RTC was based on a server managing all communications, running all communications through that server.</p>
+      <p>It's inefficient and expensive to run a service to relay media.</p>
+    </aside>
+</slide>
+
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class='big'><img src="images/yes.png" alt="RTC peer to peer" style='max-width: 100%' /></div>
+    </article>
+    <aside class="note">
+      <p>So WebRTC is peer to peer - with a nice friendly fluffy cloud right in the middle.</p>
+      <p>As we'll find out, it's not quite that simple, but keep this image in mind.</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Shopping list</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>IETF communication protocols: <a href="http://tools.ietf.org/html/draft-ietf-rtcweb-overview" title="IETF: Overview: Real Time Protocols for Brower-based Applications">RTCWEB</a>, <a href="http://tools.ietf.org/html/draft-ietf-rtcweb-jsep-00" title="IETF draft proposal">JSEP</a>...</li>
+      <li>W3C API standards: <a href="http://www.w3.org/TR/webrtc/" title="W3C WebRTC draft spec">WebRTC</a>, <a href="http://www.w3.org/TR/mediacapture-streams/" title="W3C Media Capture and Streams draft spec">Media Capture and Streams</a>... </li>
+      <li>Media and communication stack: <a href="http://www.webrtc.org/reference/webrtc-internals" title="webrtc.org WebRTC Internals: libjingle components reused by WebRTC">libjingle</a>, <a href="http://www.webmproject.org/tools/" title="WebM and VP8 tools">VP8</a>, <a href="http://www.opus-codec.org/" title="Opus Codec home page">Opus</a>...</li>
+    </ul>
+  </article>
+  <aside class="note">
+    <p>When I say WebRTC, I want to be clear that WebRTC is actually a collective solution built from a wide litany of various pieces coming together - the base RTCWeb and session protocols from the IETF, WebRTC and Media Capture and Streams from the W3C, the libjingle library for doing XMPP-based peer-to-peer management, and the VP8 video and Opus audio codecs.</p>
+    <p>With all of these required pieces, this may seem... fragile.  Like, it must only be implemented on a particular version of Chrome, on one OS, with particular hardware.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>WebRTC across platforms</h2>
+  </hgroup>
+  <article style="height: 100%; position: relative">
+    <ul class="tight" xstyle='margin: 0 1em 0 0'>
+      <li><a href="http://apprtc.appspot.com">Chrome and Chrome for Android</a></li>
+      <li>Firefox and Firefox for Android</li>
+      <li>Opera</li>
+      <li>Native <a href="https://code.google.com/p/libjingle/source/browse/trunk/talk/app/webrtc/java/src/org/webrtc/PeerConnection.java">Java</a> and Objective-C bindings</li>
+    </ul>
+    <img src="images/android.jpg" alt="Firefox/Chrome interoperability" style="position: absolute; right: 2em; top: -82px; width: 320px" />
+    <img src="images/firefoxChrome.jpg" alt="Firefox/Chrome interoperability" style="position: absolute; bottom: 5em; width: 45%;" />
+  </article>
+  <aside class="note">
+    <p>Actually, that's not true at all.  Chrome, Firefox and Opera all implement WebRTC; in fact, Chrome and Firefox implement WebRTC on Android, too!  Let's take a look; I'm going to load up our webRTC chat demo, and now I'll go to the same site on my mobile... Wave to yourselves!</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Qt moving to Chromium</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Framework for cross-platform/device native and embedded apps</li>
+      <li>Qt WebKit => Qt WebEngine</li>
+      <li>Multimedia and new HTML5 features such as WebRTC working out-of the-box</li>
+    </ul>
+  </article>
+  <aside class="note">
+    <p>The Qt framework (for building cross-platform/device native and embedded apps) is moving from Qt WebKit to Qt WebEngine, based on Chromium, so they will be getting WebRTC support too!</p>
+    <p>Putting all of these implementations together, this means...</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+  <article class="fill flexbox vcenter">
+       <div class="big" style="margin: 0 0 0.3em 0;"><b>1,000,000,000+</b></div>
+       <div>WebRTC endpoints</div>
+  </article>
+  <aside class="note">
+  <p>...we have over one billion WebRTC-enabled users today, which gives some idea of the size of this opportunity. In order to grow the ecosystem further, we're also providing official, supported native versions of WebRTC for Android, and iOS.</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+  <article class="fill flexbox vcenter">
+    <div><a href="http://blog.vline.com/post/61581986806/live-tv-interview-powered-by-vline-customer-in-quality" title="vLine blog post" style="border-bottom: none;"><img src="images/skyLarge.jpg" alt="Sky TV interview done via WebRTC" style="width: 100%;" /></a></div>
+  </article>
+  <aside class="note">
+  <p>Back in August vLine facilitated the first live TV interview done via WebRTC on SkyNews.</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class='big'><img src="images/obTrucks.jpg" alt="Outdoor broadcast truck" style='width: 100%' /></div>
+      <footer class="source" style='position: absolute; bottom: 23px; left: 150px'><a href="https://en.wikipedia.org/wiki/File:BBC_HD_SNG.jpg" title="OB trucks">en.wikipedia.org/wiki/File:BBC_HD_SNG.jpg</a></footer>
+    </article>
+    <aside class="note">
+      <p>To put this in context - typically live TV interview setups look like this.</p>
+    </aside>
+</slide>
+
+<slide class="nobackground">
+  <article class="fill flexbox vcenter">
+    <img src="images/skyKit.jpg" alt="Webcam and Yeti mic used for Sky interview" style="width: 100%;" />
+  </article>
+  <aside class="note">
+  <p>By contrast, the rig used to do that SkyNews interview looked like this - like a standard video podcasting rig.  WebRTC is about democratizing peer-to-peer realtime audio and video communications.</p>
+  </aside>
+</slide>
+
+
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>What do we need for RTC?</h2>
+    <h3></h3>
+  </hgroup>
+  <aside class="note">
+    <p>So that's the vision for WebRTC. Now let's dig into how WebRTC works.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Four main tasks</h2>
+  </hgroup>
+    <article>
+  <ul>
+    <li>Acquiring audio and video</li>
+    <li>Establishing a connection between peers</li>
+    <li>Communicating audio and video</li>
+    <li>Communicating arbitrary data</li>
+  </ul>
+    </article>
+    <aside class="note">
+    <p></p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Three main JavaScript APIs</h2>
+  </hgroup>
+  <article>
+  <ul>
+    <li>MediaStreams (aka getUserMedia)</li>
+    <li>RTCPeerConnection</li>
+    <li>RTCDataChannel</li>
+  </ul>
+  </article>
+  <aside class="note">
+  </aside>
+</slide>
+
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>MediaStreams</h2>
+    <h3>Acquiring audio and video</h3>
+  </hgroup>
+  <aside class="note">
+    <p>So let's dive in to how we acquire and access local audio and video streams.</p>
+    <p></p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>MediaStream</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Represents a stream of synchronised media</li>
+      <li>Can contain multiple audio and/or video MediaStreamTracks</li>
+      <li>Obtain a MediaStream with <code>navigator.getUserMedia()</code></li>
+    </ul>
+  </article>
+  <aside class="note">
+  </aside>
+</slide>
+
+<!-- <slide class="nobackground">
+  <article class="flexbox vcenter">
+    <img src="images/mediaStream.png" alt="MediaStream diagram" style="width: 733px" />
+  </article>
+  </article>
+  <aside class="note">
+  </aside>
+</slide> -->
+
+<slide>
+  <hgroup>
+    <h2>gUM</h2>
+    <h3>It's pretty simple.</h3>
+  </hgroup>
+  <article>
+    <pre class="prettyprint" data-lang="javascript">
+var constraints = {video: true};
+
+function successCallback(stream) {
+  var video = document.querySelector("video");
+  video.src = window.URL.createObjectURL(stream);
+}
+
+function errorCallback(error) {
+  console.log("navigator.getUserMedia error: ", error);
+}
+
+<b>navigator.getUserMedia(constraints, successCallback, errorCallback);</b>
+</pre>
+  </article>
+</slide>
+
+
+<slide class="nobackground">
+  <article class="fill flexbox vcenter">
+    <div class="big"><a href="http://www.simpl.info/gum" title="Simple getUserMedia demo">simpl.info/gum</a></div><p>&nbsp;</p>
+    <pre class="prettyprint" data-lang="javascript">
+var constraints = {video: true};
+
+function successCallback(stream) {
+  var video = document.querySelector("video");
+  <b>video.src = window.URL.createObjectURL(stream);</b>
+}
+
+function errorCallback(error) {
+  console.log("navigator.getUserMedia error: ", error);
+}
+
+navigator.getUserMedia(constraints, successCallback, errorCallback);
+</pre>
+</pre>    
+  </article>
+  <aside class="note">
+    <p>You can also do other things with that video stream - most notably, you can assign it to a video SRC attribute, and display it live!</p>
+    <p>I want to briefly talk about security of this access to the camera...</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>gUM permissions</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>HTTPS only prompts once!</li>
+      <li>Chrome apps: <code>audioCapture</code> and <code>videoCapture</code> permissions</li>
+      <li>UI settings can be changed afterwards.</li>
+    </ul>
+  </article>
+  <aside class="note">
+   <p>If you run with HTTPS, or from an app, permission will only be asked for once.</p>
+    <p>Likewise with Chrome apps that ask for "audioCapture" and"videoCapture" permissions. Permission is only requested on installation. gUM isn't available for Chrome extensions at this point, though I believe some have been whitelisted.</p>
+    <p>To change cameras/settings in Chrome click to the right of the URL bar</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class='big'><img src="images/file.png" alt="Don't use file:// URLs" style='max-width: 100%' /></div>
+    </article>
+    <aside class="note">
+      <p>A word of warning: you must run getUserMedia() from a server.</p>
+      <p>Otherwise you'll get a rather baffling PERMISSION_DENIED error.</p>
+      <p>There are efforts underway to provide better error messages.</p>
+      <p>file:// URLs are prohibited for lots of Chrome APIs simply</p>
+    </aside>
+</slide>
+
+<!-- <slide class="nobackground">
+  <hgroup>
+    <h2>Multiple inputs</h2>
+  </hgroup>
+  <article class="fill flexbox vcenter">
+    <div id='multipleInputs'>
+    <img id='nexusInput' src="images/nexus10.png" alt="Nexus 10" />
+    <div>
+    Microphone<br />
+    →<br />
+    Front camera<br />
+    →<br />
+    Rear camera<br />
+    →<br />
+    App sharing video<br />
+    →<br />
+    <br />
+    Webcam video<br />
+    ←<br />
+    Stereo audio<br />
+    ←
+    </div>
+  <img id='pixelInput' src="images/pixel.jpg" alt="Chromebook Pixel" />
+  </div>
+  </article>
+  <aside class="note">
+    <p>Chrome, Firefox, Opera, Chrome and Firefox on Android.</p>
+  </aside>
+</slide> -->
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">gUM + Canvas</div>
+      <div><a href="http://idevelop.github.com/ascii-camera/" title="getUserMedia video rendered as ASCII art">idevelop.github.com/ascii-camera</a></div>
+<!--      <div>(<a href="http://idevelop.ro/ascii-camera/">alternate link</a>)</div>-->
+    </article>
+    <aside class="note">
+    <p>gUM gets interesting when plugged into other APIs.</p>
+    <p>This page is frame-grabbing images from the gUM video, and then analysing each pixel and turning it into ASCII.</p>
+    </aside>
+</slide>
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div><a href="http://lli.web.fh-koeln.de/mocowe" title="getUserMedia used to control a slide deck">lli.web.fh-koeln.de/mocowe</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">gUM + head tracking</div>
+      <div><a href="http://www.shinydemos.com/facekat/" title="getUserMedia used to control a game">FaceKat</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">gUM + CSS filters</div>
+      <div><a href="http://html5-demos.appspot.com/static/getusermedia/photobooth.html" title="getUserMedia photobooth with CSS effects">html5-demos.appspot.com/static/getusermedia/photobooth.html</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">gUM + WebGL</div>
+      <div><a href="http://webcamtoy.com/app" title="getUserMedia photobooth with WebGL effects and sharing">webcamtoy.com</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div><a href="http://www.soundstep.com/blog/experiments/jsdetection/" title="getUserMedia xylophone">soundstep.com/blog/experiments/jsdetection</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div><a href="http://www.simpl.info/headtrackr" title="getUserMedia with headtrackr.js face detection">simpl.info/headtrackr</a></div>
+    </article>
+    <aside class="note">
+    <p>Check out the console for headtracking events!</p>
+    </aside>
+</slide> -->
+
+
+<!-- <slide>
+  <hgroup>
+    <h2>Constraints</h2>
+  </hgroup>
+  <article>
+    <ul class="tight">
+      <li>Mandatory or optional</li>
+      <li>Resolution: width and height</li>
+      <ul class="tight">
+      <li>from a <a href="https://code.google.com/p/chromium/issues/detail?id=143631#c9" title="Constraints resolutions">fixed list</a></li>
+      <li>no cropping or scaling (yet)</li>
+      </ul>
+      <li>Frame rate</li>
+      <li>Facing mode: front or back camera</li>
+      <li>Source type: video camera, screen capture...</li>
+      <li>Source id</li>
+      <li>Volume</li>
+    </ul>
+  </article>
+  <aside class="note">
+    <p>Constraints allow us to impose constraints on media</p>
+    <p>In the simple gUM example, we chose to get video only, so as to avoid feedback.</p>
+  </aside>
+</slide> -->
+
+<slide>
+  <hgroup>
+    <h2>getUserMedia + Web Audio</h2>
+  </hgroup>
+  <article>
+    <pre class="prettyprint" data-lang="javascript">
+// Success callback when requesting audio input stream
+function gotStream(stream) {
+    var audioContext = new webkitAudioContext();
+
+    // Create an AudioNode from the stream
+    <b>var mediaStreamSource = audioContext.createMediaStreamSource(stream);</b>
+
+    // Connect it to the destination or any other node for processing!
+    mediaStreamSource.connect(audioContext.destination);
+}
+
+navigator.webkitGetUserMedia( <b>{audio:true}</b>, gotStream);
+</pre>
+  <p style='margin: 2em 0 0 0'>Make sure to enable Web Audio Input in about:flags!</p>
+
+  </article>
+  <aside class="note">
+  <p>RTCPeerConnection will also accept Web Audio output.</p>
+  </aside>
+</slide>
+
+ <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">gUM + Web Audio + WebGL</div>
+      <div><a href="http://www.webaudiodemos.appspot.com/Vocoder/index.html" title="Record audio">webaudiodemos.appspot.com/Vocoder</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+
+<slide>
+  <hgroup>
+  </hgroup>
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">Select resolution</div>
+      <div><a href="https://simpl.info/getusermedia/constraints/" title="getUserMedia constraints demo">simpl.info/getusermedia/constraints</a></div>
+    </article>
+    <aside class="note">
+      <p>Constraints can let us choose resolution.</p>
+      <p>Note that scaling and cropping aren't supported by browsers.</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+  </hgroup>
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">Select mic and camera</div>
+      <div style="margin: 0 0 3em 0;"><a href="https://simpl.info/getusermedia/sources/" title="getUserMedia sources demo">simpl.info/getusermedia/sources
+</a></div>
+      <div style="font-size: 70%"><a href="https://play.google.com/store/apps/details?id=com.chrome.beta" title="Google Play: install Chrome Beta for Android">Install Chrome Beta for Android</a></div>
+    </article>
+    <aside class="note">
+      <p>Constraints also let us choose media source.</p>
+      <p>[Run, plug in camera, reload page, the show on Android Beta.]</p>
+      <p>By the way, if you want to install Chrome Beta on your Android, you'll need to go via your browser, not the Google Play app.</p>
+    </aside>
+</slide>
+
+
+<slide>
+  <hgroup>
+    <h2>Work underway to make this more user-focused</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>User wants to choose "front-facing" or "rear-facing" camera, not a USB ID!</li>
+      <li>Choose source: <a href="http://www.w3.org/TR/mediacapture-streams/#video-facing-mode-enum" title="W3C facing mode draft spec">spec</a></li>
+      <li>Apply constraints dynamically from JavaScript: <a href="http://www.w3.org/TR/mediacapture-streams/#widl-MediaStreamTrack-applyConstraints-void-MediaTrackConstraints-constraints" title="W3C applyConstraints() draft spec">spec</a></li>
+    </ul>
+  </article>
+  <aside class="note">
+  <p></p>
+    <p>Specs are being drafted to give more options for choosing devices,  resolutions and other constraints.</p>
+    <p>Generic device choice, e.g. user-facing camera: not specific device ID.</p>
+    <p>Selfie mode!</p>
+    <p>With applyConstraints(): width, height, framerate, facingMode, etc.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>gUM screencapture!</h2>
+  </hgroup>
+  <article>
+    <p>Be sure to enable <a href="chrome://flags/#enable-usermedia-screen-capture">screen capture support in getUserMedia</a>!</p>
+    <pre class="prettyprint" data-lang="javascript">
+var constraints = {
+  video: {
+    mandatory: {
+      chromeMediaSource: 'screen'
+    }
+  }
+};
+
+navigator.webkitGetUserMedia(constraints, gotStream);
+</pre>
+<!-- <a href="https://simpl.info/screencapture/" title="Screen capture–RTCPeerConnection demo">simpl.info/screencapture</a> -->
+  </article>
+  <aside class="note">
+    <p>Tab capture is also available from Chrome apps.</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style='margin: 0 0 2em 0'><a href="https://html5-demos.appspot.com/static/getusermedia/screenshare.html" title="Screen sharing demo">Screen sharing</a></div>
+      <div><a href="http://updates.html5rocks.com/2012/12/Screensharing-with-WebRTC" title="HTML5 Rocks update demoing tab capture">Tab capture: chrome.tabCapture</a></div>
+    </article>
+    <aside class="note">
+    <p>Extremely useful for doing IT support for your extended family!</p>
+    </aside>
+</slide>
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div><a href="http://webaudiodemos.appspot.com/pitchdetect/index.html" title="Pitch detection demo">webaudiodemos.appspot.com/pitchdetect</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div><a href="http://www.webaudiodemos.appspot.com/input/index.html" title="Web Audio effects demo">webaudiodemos.appspot.com/input</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div><a href="http://www.lab.aerotwist.com/webgl/audio-room" title="WebGL example">lab.aerotwist.com/webgl/audio-room</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div><a href="http://samdutton.net/backwards/" title="Record audio and play it backwards">samdutton.net/backwards</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+ -->
+
+<!-- <slide>
+  <hgroup>
+    <h2>gUM ☞ Web Audio ☞ RTCPeerConnection</h2>
+  </hgroup>
+  <article>
+  <p style="margin: 0 0 2em 0">Capture microphone input and stream it to a peer with processing applied:</p>
+    <pre class="prettyprint" data-lang="javascript">
+navigator.getUserMedia('audio', gotAudio);
+function gotAudio(stream) {
+  var microphone = context.createMediaStreamSource(stream);
+  var filter = context.createBiquadFilter();
+  var peer = context.createMediaStreamDestination();
+  microphone.connect(filter);
+  filter.connect(peer);
+  peerConnection.addStream(peer.stream);
+}
+</pre>
+
+  <p style="margin: 2em 0 0 0"><a href="https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/webrtc-integration.html" title="W3C examples adapted from the MediaStream Processing API proposal">More Media Stream integration examples</a></p>
+
+  </article>
+  <aside class="note">
+    <p>Already in experimental builds and working well.</p>
+    <p>This is very powerful: effects into and out of RTCPeerConnection.</p>
+    <p>'Join the boxes' architecture.</p>
+  </aside>
+</slide> -->
+
+
+<!--
+<slide>
+  <hgroup>
+    <h2>Media Stream Recording API</h2>
+  </hgroup>
+    <article>
+    <ul>
+      <li>Demo: <a href="http://simpl.info/mediarecorder" title="Media Stream Recording demo">simpl.info/mediarecorder</a></li>
+      <li><a href="https://dvcs.w3.org/hg/dap/raw-file/default/media-stream-capture/MediaRecorder.html" title="W3C MediaRecorder draft spec">Spec</a></li>
+      <li>Chrome <a href="https://groups.google.com/a/chromium.org/forum/?fromgroups=#!topic/blink-dev/2l_G_apqk30" title="blink-dev Media Stream Recording API Intent to Implement discussion">Intent to Implement</a></li>
+      <li><a href="http://www.w3.org/TR/streams-api/" title="W3C Streams API draft spec">Streams API</a></li>
+    </ul>
+    </article>
+    <aside class="note">
+      <p>Needs Firefox!</p>
+      <p>How does it work? A MediaRecorder is created which takes an audio stream from navigator.getUserMedia(). When a blob of recorded data becomes available (set to occur after two seconds) this is used to set the src of the audio element, using window.URL.createObjectURL().</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Media Stream Image Capture API</h2>
+  </hgroup>
+    <article>
+    <ul>
+      <li><del>Demo</del></li>
+      <li><a href="http://gmandyam.github.io/image-capture/" title="W3C Media Stream Image Capture draft spec">Spec</a></li>
+      <li><code>getFrame()</code> creates an <code>ImageData</code> object available in <code>onframegrab</code></li>
+      <li><code>takePhoto()</code> creates a Blob available in <code>onphoto</code></li>
+    </ul>
+    </article>
+    <aside class="note">
+      <p>How does it work? A MediaRecorder is created which takes an audio stream from navigator.getUserMedia(). When a blob of recorded data becomes available (set to occur after two seconds) this is used to set the src of the audio element, using window.URL.createObjectURL().</p>
+    </aside>
+</slide>
+-->
+
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>RTCPeerConnection</h2>
+    <h3>Audio and video communication between peers</h3>
+  </hgroup>
+  <aside class="note">
+    <p>This is the API for audio and video communication, to create a connection between peers.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Communicate Media Streams</h2>
+  </hgroup>
+  <article class="fill flexbox vcenter">
+    <div>
+      <img style="float: left; width: 27%;" src="images/caller.jpg" alt="WebRTC video chat: caller" />
+      <div style="float: left; line-height: 2em; margin: 0 2em 0 2em; text-align: center;">
+      →<br />
+      getUserMedia<br />
+      +<br />
+      RTCPeerConnection<br />
+      ←
+      </div>
+      <img  style="float: left; position: relative; top: 38px; width: 35%;" src="images/callee.jpg" alt="WebRTC video chat: callee" />
+    </div>
+  </article>
+  <aside class="note">
+    On the surface, the API is simple - get access to MediaStreams via getUserMedia, then plug them into a PeerConnection, and they will get sent to another WebRTC endpoint automatically. And when we receive media from the remote side, this goes into new MediaStreams that can be rendered in our web page.
+  </aside>
+</slide>
+
+<!-- <slide class="nobackground">
+  <hgroup>
+    <h2>RTCPeerConnection does a lot</h2>
+  </hgroup>
+    <article>
+  <ul>
+    <li>Signal processing</li>
+    <li>Codec handling</li>
+    <li>Peer to peer communication</li>
+    <li>Security</li>
+    <li>Bandwidth management</li>
+  </ul>
+    <p>...</p>
+    </article>
+    <aside class="note">
+    <p>Under the hood though, RTCPeerConnection is doing a lot - processing audio and video to remove noise, compressing the data using codecs, setting up the peer to peer pathway through NATs and firewalls, encrypting the data, ensuring we use the right amount of bandwidth...</p>
+    </aside>
+</slide>
+ -->
+<slide>
+  <hgroup>
+    <h2>WebRTC architecture</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/webrtcArchitecture.png" alt="WebRTC architecture diagram" />
+  </article>
+  <aside class="note">
+    <p>Under the hood though, RTCPeerConnection is doing a lot - processing audio and video to remove noise, compressing the data using codecs, setting up the peer to peer pathway through NATs and firewalls, encrypting the data, ensuring we use the right amount of bandwidth...</p>
+    <p>There's a lot of moving parts under the hood. Fortunately, with RTCPeerConnection, this is mostly abstracted away. You create a RTCPeerConnection, add your own MediaStreams to it, call a couple methods to set up the right parameters for the call, and off you go.</p>
+  </aside>
+</slide>
+
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>WebRTC infrastructure</h2>
+    <h3>STUN, TURN and signaling</h3>
+  </hgroup>
+  <aside class="note">
+    <p>Or, that's what the nice fluffy white cloud I showed you would make you think.First, let's take a detour...</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div>Peer to peer &mdash; but we need servers  :^\</div>
+    </article>
+    <aside class="note">
+      <p>You may be asking, what does WebRTC need servers for?</p>
+      <p>Well, it's not really scalable to simply shout into the Internet, 'I want to exchange streaming data with my friend's computer! He's right over there!'.</p>
+      <p>We need to negotiate that connection.</p>
+    </aside>
+</slide>
+
+<slide class="nobackground">
+  <hgroup>
+    <h2>Signaling - coordinating communication</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Need to cope with NATs and firewalls: STUN and TURN</li>
+      <li>To do this, we exchange 'session description' objects:</li>
+      <ul class="tight">
+        <li>What media formats I support, what I want to send</li>
+        <li>Network information for peer-to-peer setup</li>
+      </ul>
+      <li>Signaling *can* use any messaging mechanism or protocol</li>
+    </ul>
+  </article>
+  <aside class="note">
+    <p>Signaling is the process of coordinating communication. Just like making a phone call, where the phone system is responsible for making connections, traversing the network - The same is true for WebRTC. A message needs to get sent by each side indicating the parameters they want to use for the call. This is called a "session description", and it includes a bunch of details regarding codecs, encryption, network information, etc.</p>
+    <p>The details aren't critical for most apps; they just need to exchange these messages in some way. The mechanism is up to the app - it can use WebSocket, XHR and Server-sent Events, whatever it wants to use, and whatever protocol - many apps will send these messages as JSON, although some apps may use the standard SIP or XMPP protocols.</p>
+
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>JSEP architecture</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/jsep.png" alt="JSETP architecture diagram">
+  </article>
+    <aside class="note">
+    <p>This is where the Javascript Session Establishment Protocol comes in to play.  The caller sends a session description to its signaling server in the cloud, which then forwards this on to the callee. Similarly, the callee then sends its own session description back through the cloud to the caller. Once each side has given the session descriptions to RTCPeerConnection, the peer-to-peer link is established and media can flow - and the server isn't part of that communication at all.</p>
+  </aside>
+</slide>
+
+
+<!-- <slide>
+  <hgroup>
+    <h2>Signaling: how?</h2>
+  </hgroup>
+  <article>
+  <ul class='tight'>
+    <li>Needs to be bidirectional</li>
+    <li>Repeated polling: inefficient and not scalable</li>
+    <li><a href="https://en.wikipedia.org/wiki/Comet_(programming)" title="Wikipedia article about Comet">Long polling / Comet</a> (as used by Google App Engine)</li>
+    <li>XHR + <a href="http://www.html5rocks.com/en/tutorials/eventsource/basics/" title="Server-sent Events article on HTML5 Rocks">EventSource</a> (aka Server-sent events): <a href="http://simpl.info/es" title="EventSource demo">demo</a></li>
+    <li>WebSocket:
+    <ul class='tight'>
+      <li>more natural solution &mdash; it's bidirectional!</li>
+      <li>supported by all browsers that support WebRTC, desktop and mobile</li>
+      <li>use TLS: for security and to avoid proxy problems</li>
+      <li>for more information: see Ilya Grigorik's <a href="http://chimera.labs.oreilly.com/books/1230000000545/ch17.html#_http_upgrade_negotiation" title="Chapter from forthcoming O'Reilly book: High Performance Browser Networking">forthcoming O'Reilly chapter</a></li>
+      <li>Peter Lubber's <a href="http://refcardz.dzone.com/refcardz/html5-websocket" title="WebSocket Cheat Sheet">WebSocket Cheat Sheet</a></li>
+    </ul>
+    </li>
+  </ul>
+  </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<!-- <slide>
+  <hgroup>
+    <h2>Signaling gotchas</h2>
+  </hgroup>
+  <article>
+  <ul>
+    <li>RTCPeerConnection won't start gathering candidates until <code>setLocalDescription()</code> is called: mandated in <a href="http://tools.ietf.org/html/draft-ietf-rtcweb-jsep-03#section-4.2.4" title="JSEP IETF draft, section 4.2.4">JSEP IETF draft</a></li>
+    <li>Take advantage of <a href="http://tools.ietf.org/html/draft-rescorla-mmusic-ice-trickle-00" title="IETF Trickle ICE Memo">Trickle ICE</a>: call addIceCandidate() as soon as candidates&nbsp;arrive</li>
+    <li>Not bandwidth or CPU hungry, but could still be heavy load</li>
+  </ul>
+  </article>
+    <aside class="note">
+    </aside>
+</slide> -->
+
+<slide>
+  <hgroup>
+    <h2>RTCPeerConnection initialisation</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Ascertain local media conditions: resolution, codec capabilities...</li>
+      <li>Get potential network addresses for the application's host: candidates</li>
+      <li>Exchange this data via the signaling mechanism.</li>
+    </ul>
+    <a href="http://www.w3.org/TR/webrtc/#simple-peer-to-peer-example" title="Simple W3C Signaling example">w3.org/TR/webrtc/#simple-peer-to-peer-example</a>
+  </article>
+  <aside class="note">The RTCPeerConnection takes care of this initialisation - it checks the local media capabilities, the network landscape and such, and then exchanges this via the signaling mechanism.
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Signaling with Node and Socket.io</h2>
+  </hgroup>
+  <article>
+  <ul>
+    <li>Socket.io uses WebSocket with fallbacks</li>
+    <li>Simple to exchange messages</li>
+    <li>Built-in concept of 'rooms'</li>
+  </ul>
+  <p><a href="https://bitbucket.org/webrtc/codelab/src/master/complete/step5" title="Codelab walkthrough to build signaling server with Socket.io">Codelab</a></p>
+  <p><a href="http://samdutton-nodertc.jit.su" title="Video chat application using Socket.io for signaling">Live example</a></p>
+  </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+<!-- <slide>
+  <hgroup>
+    <h2>Make me an offer</h2>
+  </hgroup>
+  <article>
+    <ol class='tight'>
+      <li>Fred calls <code>createOffer()</code></li>
+      <li>In the callback, Fred calls <code>setLocalDescription()</code></li>
+      <li>Fred serialises the offer and sends it Wilma</li>
+      <li>Wilma calls <code>setRemoteDescription()</code> with the offer</li>
+      <li>Wilma calls <code>createAnswer()</code></li>
+      <li>Wilma calls <code>setLocalDescription()</code> with the answer and sends it to Fred</li>
+      <li>Fred receives answer and calls <code>setRemoteDescription()</code></li>
+    </ol>
+  </article>
+    <aside class="note">
+      <ol>
+        <li>The caller creates an RTCPeerConnection object and sets the local description.</li>
+        <li>Caller uses RTCPeerConnection to create an offer. An offer is a blob - a local session description in SDP format.</li>
+        <li>The offer or answer can be edited, for example to tweak codecs.</li>
+      </ol>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Find me a candidate</h2>
+  </hgroup>
+  <article>
+    <ol>
+      <li>Fred and Wilma create RTCPeerConnection objects</li>
+      <li>If success, <code>icecandidate</code> events start propagating</li>
+      <li>Fred starts serialises IceCandidates and sends them to Wilma</li>
+      <li>Wilma gets Fred's IceCandidates, calls <code>addIceCandidate()</code></li>
+      <li>Wilma serialises IceCandidates and sends them to Fred</li>
+      <li>Fred gets Wilma's IceCandidates, calls <code>addIceCandidate()</code></li>
+      <li>Ping!</li>
+    </ol>
+  </article>
+    <aside class="note">
+    <p>Once Fred and Wilma have a signaling channel, they can start sending network and media metadata, to make a direct connection and to start streaming audio and video.</p>
+    <p>This is the process of exchanging network data.</p>
+    </aside>
+</slide> -->
+
+<slide>
+  <hgroup>
+    <h2>An RTCSessionDescription</h2>
+  </hgroup>
+  <article>
+<pre class="prettyprint" data-lang="ugh">
+v=0
+o=- 7614219274584779017 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio video
+a=msid-semantic: WMS
+m=audio 1 RTP/SAVPF 111 103 104 0 8 107 106 105 13 126
+c=IN IP4 0.0.0.0
+a=rtcp:1 IN IP4 0.0.0.0
+a=ice-ufrag:W2TGCZw2NZHuwlnf
+a=ice-pwd:xdQEccP40E+P0L5qTyzDgfmW
+...
+</pre>
+
+<p>Want to know what all this SDP gobbledygook actually means?</p>
+<p>Take a look at the <a href="http://datatracker.ietf.org/doc/draft-nandakumar-rtcweb-sdp/?include_text=1" title="IETF SDP examples">IETF examples</a>.</p>
+
+  </article>
+    <aside class="note">
+    <p>In case you're wondering, the insides of a RTCSessionDescription look like this. While apps can manipulate this information for fine-grained control, we've tried to make it so that most apps don't need to worry about this.</p>
+    <p>Bear in mind that WebRTC is designed so that the offer or answer can be tweaked before being set as the local or remote description, by editing the values in the SDP text. For example, the preferAudioCodec() function in apprtc.appspot.com can be used to set the default codec and bitrate. SDP is somewhat painful to manipulate with JavaScript, and there is discussion about whether future versions of WebRTC should use JSON instead, but there are some advantages to staying with SDP. </p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Candidate objects</h2>
+  </hgroup>
+  <article>
+<pre class="prettyprint" data-lang="nice">
+{
+  'type':'candidate',
+  'label':1,
+  'id':'video',
+  'candidate':'a=candidate:1274936569 1 udp 1845501695 2.96.35.15 63579
+               typ srflx raddr 192.168.0.3 rport 63579 generation 0\r\n'
+}
+...
+{
+  'type':'candidate',
+  'label':0,
+  'id':'audio',
+  'candidate':'a=candidate:3802297132 1 udp 2113937151 192.168.0.3 63579
+               typ host generation 0\r\n'
+}
+
+</pre>
+  </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+<!-- <slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div style="margin: 0 0 1em 0; font-weight: bold">Edit SDP</div>
+      <div><a href="http://simpl.info/rtcpeerconnection/munge" title="Edit SDP values">simpl.info/rtcpeerconnection/munge</a></div>
+    </article>
+    <aside class="note">
+    <p>This demo shows offer and answer SDP, which can be edited.</p>
+    </aside>
+</slide> -->
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+       <div style="margin: 0 0 1em 0; font-weight: bold">Output of one RTCPeerConnection as input for another</div>
+       <div><a href="http://simpl.info/rtcpeerconnection/multi
+" title="RTCPeerConnection as input to RTCPeerConnection">simpl.info/rtcpeerconnection/multi</a></div>
+    </article>
+    <aside class="note">
+    <p>Hot off the press...</p>
+    <p>It's now possible to use the output of one RTCPeerConnection as the input for another.</p>
+    <p>This is useful because it allows a WebRTC application to route calls.</p>
+    </aside>
+</slide>
+
+<slide class="nobackground red">
+    <article class="fill flexbox vcenter">
+      <div class="big"><strong>My head hurts.</strong></div>
+    </article>
+    <aside class="note">
+      At this point, you're probably thinking "head hurts."  Don't worry!  Ben is going to spend a bunch more time diving in to these pieces.
+    </aside>
+</slide>
+
+<slide class="nobackground">
+  <article class="fill flexbox vcenter">
+    <div style="margin: 0 0 1em 0; font-weight: bold">RTCPeerConnection without signaling</div>
+    <div class="big"><a href="http://www.simpl.info/pc" title="Simple one-page RTCPeerConnection example">simpl.info/pc</a></div>
+  </article>
+  <aside class="note">
+    <p>If you want to understand how WebRTC works, it's good to learn about RTCPeerConnection first, before you try to get your head around signaling mechanisms.</p>
+    <p>This 'single page' demo does just that.</p>
+    <p>It's very verbose: take a look at the console.</p>
+    <p>Also take a look at chrome://webrtc-internals.</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+    <div style="margin: 0 0 1em 0; font-weight: bold">The canonical, full-fat video chat app!</div>
+      <div class='big'><a href="http://apprtc.appspot.com" title="Canonical RTCPeerConnection videochat example">apprtc.appspot.com</a></div>
+    </article>
+    <aside class="note">
+    <p>This is the best place to start with a fully featured WebRTC app: RTCPeerConnection, with signaling provided by XHR and DataChannel.</p>
+    </aside>
+</slide>
+
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>RTCDataChannel</h2>
+    <h3>Bidirectional communication of arbitrary data between peers</h3>
+  </hgroup>
+  <aside class="note">
+    <p>The last API to talk about is RTCDataChannel.  Dan is going to give a whole talk about DataChannels, so I don't want to duplicate too much - I just want you to get the basic idea.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Communicate arbitrary data</h2>
+  </hgroup>
+  <article class="fill flexbox vcenter">
+  <div>
+
+  <div style="float: left; width: 28%;">
+    <img style="display: block; margin: 0 0 0.5em 0; position: relative; width: 100%;" src="images/jankInvadersScreenshot.jpg" alt="Game: caller" />
+    <div style="background: #eee; font-family: 'Source Code Pro', 'Courier New', monospace; font-size: 0.5em; line-height: 1.2em; padding: 1em; white-space: pre;">onreceivemessage = handle(data);
+...
+var myData = [
+  {
+    id: "ship1";
+    x: 24,
+    y: 11,
+    velocity: 7
+  },
+  ....
+]
+send(myData);
+</div>
+      </div>
+      <div style="float: left; line-height: 2em; margin: 0 2em 0 2em; position: relative; text-align: center; top: 4em; width: 25%;">
+      →<br />
+      RTCDataChannel<br />
+      +<br />
+      RTCPeerConnection<br />
+      ←
+      </div>
+
+      <div style="float: left; width: 28%;">
+        <div style="background: #eee; font-family: 'Source Code Pro', 'Courier New', monospace; font-size: 0.5em; line-height: 1.2em; margin: 0 0 1em 0; padding: 1em; white-space: pre;">onreceivemessage = handle(data);
+...
+var myData = [
+  {
+    id: "ship7";
+    x: 19,
+    y: 4,
+    velocity: 18
+  },
+  ....
+]
+send(myData);
+</div>
+        <img style="display: block; width: 100%;" src="images/jankInvadersScreenshotReversed.jpg" alt="Game: callee" />
+      </div>
+
+  </div>
+  </article>
+  <aside class="note">
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>RTCDataChannel</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Same API as WebSockets</li>
+      <li>Ultra-low latency</li>
+      <li>Optionally unreliable or reliable: <br />
+      &mdash; Firefox and Chrome 31, Chrome 30 behind a flag</li>
+      <li>Secure</li>
+    </ul>
+  </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>RTCDataChannel API</h2>
+  </hgroup>
+  <article>
+<pre class="prettyprint" data-lang="javascript">
+var pc = new webkitRTCPeerConnection(servers,
+  {optional: [{RtpDataChannels: true}]});
+
+pc.ondatachannel = function(event) {
+  receiveChannel = event.channel;
+  receiveChannel.onmessage = function(event){
+    document.querySelector("div#receive").innerHTML = event.data;
+  };
+};
+
+sendChannel = pc.createDataChannel("sendDataChannel", {reliable: false});
+
+document.querySelector("button#send").onclick = function (){
+  var data = document.querySelector("textarea#send").value;
+  sendChannel.send(data);
+};
+</pre>
+  </article>
+    <aside class="note">
+
+    <p>SCTP is now available in Chrome 30 (flagged) and 31 (no flag).</p>
+  <p>- optional reliable transfer, e.g. for file sharing (though in fact this has been accomplished over RTP, the old protocol for RTCDataChannel, which in practice is actually pretty reliable)</p>
+  <p>- binary data</p>
+  <p>- built-in flow control (flow/congestion control is built into SCTP, and bandwidth is managed not capped).</p>
+    </aside>
+</slide>
+
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class="big"><a href="http://www.simpl.info/dc" title="Single page RTCDataChannel example">simpl.info/dc</a></div>
+    </article>
+    <aside class="note">
+    </aside>
+</slide>
+
+<slide class="nobackground">
+  <article class="fill flexbox vcenter">
+    <a class="big" href="http://www.sharefest.me/" title="Sharefest app">Sharefest</a>
+  </article>
+  <aside class="note">
+  </aside>
+</slide>
+
+<!--
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>STUN and TURN</h2>
+    <h3>P2P in the age of firewalls and NATs</h3>
+  </hgroup>
+  <aside class="note">
+    <p>The other place where servers come into play is in figuring out how to route the peer-to-peer connection.</p>
+    <p>WebRTC endpoints use signaling to exchange network information to establish a connection.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>An ideal world</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/noSTUNorTURN.png" alt="Data pathways between peers if there were no NATs or firewalls" style="position: relative; top: -30px">
+  </article>
+    <aside class="note">
+      <p>In an ideal world, life would be simple - each endpoint could tell the other side its IP address, and a direct link could easily be established.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>The real world</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/firewall.png" alt="Data pathways showing firewalls" style="position: relative; top: -26px">
+
+  </article>
+   <aside class="note">
+   <p>But in the age of NAT, this just isn't the case. Most users are behind what's called a NAT, which hands out a private IP address that can't be used for communication. Without a public address, there's no way to set up a peer-to-peer link.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>STUN</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Tell me what my public IP address is</li>
+      <li>Simple server, cheap to run</li>
+      <li>Data flows peer-to-peer</li>
+    </ul>
+  </article>
+   <aside class="note">
+   <p>To solve this, we use a technology called STUN. If we tell WebRTC about the location of a STUN server, it can ask the STUN server to tell it the right public address to use. The STUN server's job is simple - it just looks at where an incoming request is coming from, and sends that address back in the response.  WebRTC can then exchange that public address with the other side and use that to set up a direct link.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>STUN</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/stun.png" alt="Data pathways between peers using STUN" style="position: relative; top: -50px">
+  </article>
+      <aside class="note">
+      <p>Here's a diagram of that in action. Each side asks its STUN server what its public address is, and then the peers can directly connect. Now, this technique usually works, but depending on the kind of NAT or firewall that is present, there are some cases where it doesn't.</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>TURN</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Provide a cloud fallback if peer-to-peer communication fails</li>
+      <li>Data is sent through server, uses server bandwidth</li>
+      <li>Ensures the call works in almost all environments</li>
+    </ul>
+  </article>
+      <aside class="note">
+      <p>The other technique that WebRTC can use is called TURN. A TURN server is essentially a server that relays the data an endpoint is trying to send to the other side. Because it has a public address already, it's easy to contact, so the connection always works, even in cases where the endpoint is behind a restrictive firewall or proxy. The downside is that all the data traffic has to go through the relay, so there's a nontrivial bandwidth cost.</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>TURN</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/STUNandTURN.png" alt="Data pathways between peers using TURN" style="left: 1px; position: relative; top: -47px">
+  </article>
+   <aside class="note">
+      <p>Here's a diagram of that in action. We tried to use STUN, but it didn't quite work right. So instead, each side contacted its own TURN server, and then data flow goes from each endpoint, through the TURN server, to the other side.</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Selecting STUN and TURN servers</h2>
+  </hgroup>
+  <article>
+<pre class="prettyprint" data-lang="javascript">
+{
+  "iceServers": [
+    {
+      "url": "stun:stun.l.google.com:19302"
+    },
+    {
+      "url": "turn:192.158.29.39:3478?transport=udp",
+      "credential": "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
+      "username": "28224511:1379330808"
+    },
+    {
+      "url": "turn:192.158.29.39:3478?transport=tcp",
+      "credential": "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
+      "username": "28224511:1379330808"
+    }
+  ]
+}</pre>
+  </article>
+      <aside class="note">
+      <p>The other technique that WebRTC can use is called TURN. A TURN server is essentially a server that relays the data an endpoint is trying to send to the
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>ICE</h2>
+  </hgroup>
+  <article>
+     <ul>
+        <li><a href="http://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment" title="Wikipedia ICE article">ICE</a>: a framework for connecting peers</li>
+      <li>Tries to find the best path for each call</li>
+      <li>Vast majority of calls can use STUN (webrtcstats.com):
+    </ul>
+ <img src="images/icestats.png" alt="Data pathways between peers using TURN" style="left: 1px; position: relative; left: 200px">
+  </article>
+  <aside class="note">
+      <p>On one hand, we have STUN, which is cheap, but doesn't always work. And on the other, we have TURN, which always works, but has an operational cost. Fortunately, we can get the best of both worlds. WebRTC uses a mechanism called ICE, Interactive_Connectivity_Establishment, to quickly figure out the best path. It tries all the possibilities in parallel and settles on the cheapest one that actually works.
+          Based on some measurements done by the folks at WebRTCStats.com, about 86% of calls will work with just STUN, only 1 in 7 calls need to be routed through a TURN server.</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Deploying STUN/TURN</h2>
+  </hgroup>
+  <article>
+     <ul>
+        <li>stun.l.google.com:19302</li>
+        <li>WebRTC stunserver, turnserver</li>
+        <li><a href="http://code.google.com/p/rfc5766-turn-server" title="rfc5766-turn-server code and links to information">rfc5766-turn-server</a></li>
+        <li> <a href="https://groups.google.com/forum/#!msg/discuss-webrtc/X-OeIUC0efs/XW5Wf7Tt1vMJ" title="">VM image for Amazon Web Services</a></li>
+        <li>restund</li>
+    </ul>
+  </article>
+  <aside class="note">
+      <p>For basic testing, we run a public STUN server, and we also include source code for STUN and TURN servers in the WebRTC tree. For running a production STUN/TURN service, we recommend using rfc5766-turn-server, which has source code and AWS VM images, or restund, available as source code.</p>
+    </aside>
+</slide>
+-->
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>Security</h2>
+  </hgroup>
+  <aside class="note">
+  <p>One question that comes up about WebRTC is how security is handled.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Security throughout WebRTC</h2>
+  </hgroup>
+  <article>
+  <ul>
+    <li>Mandatory encryption for media and data</li>
+    <li>Secure UI, explicit opt-in</li>
+    <li>Sandboxed, no plugins</li>
+    <li><a href="http://www.ietf.org/proceedings/82/slides/rtcweb-13.pdf" title="Security Architecture slides">WebRTC Security Architecture</a></li>
+  </ul>
+  </article>
+<aside class="note">
+    <p>We've taken care to build security into WebRTC from the very beginning; all media and data is encrypted and protected, we require opt-in from the user before enabling their mic and camera, and WebRTC runs in the Chrome sandbox, which means that even if someone sends malicious data to WebRTC, the browser will be unaffected.</p>
+    <p>However, signaling mechanisms aren't defined by WebRTC standards, so it's up to you make signaling secure. If an attacker manages to hijack signaling, they can stop sessions, redirect connections and record, alter or inject content.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Secure pathways</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/securePathways.png" alt="Secure pathways between peers" style="position: relative; top: -10px">
+  </article>
+  <aside class="note">
+    <p>The most important factor in securing signaling is to use secure protocols, HTTPS and WSS, which ensure that messages cannot be intercepted unencrypted.</p>
+    <p>Also be careful not to broadcast signaling messages in a way that they can be accessed by other callers using the same signaling server.</p>
+    <p>In this diagram, the signaling pathways are protected using HTTPS, and the media and data are protected using the standard SRTP and DTLS mechanisms.</p>
+  </aside>
+</slide>
+
+<!-- <slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>Architectures</h2>
+  </hgroup>
+  <aside class="note">
+  <p>Another question that developers have is how to architect their service.</p>
+  </aside>
+</slide>
+
+<slide>
+<hgroup>
+    <h2>Peer to peer: one-to-one call</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/topologyOneToOne.png" alt="Topology diagram: one to one">
+  </article>
+    <aside class="note">
+  <p>In the simplest case, a point-to-point call, the endpoints are directly connected.</p>
+  </aside>
+</slide>
+
+<slide>
+<hgroup>
+    <h2>Mesh: small N-way call</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/topologyFullMesh.png" alt="Topology: full mesh" style='width: 450px;'>
+  </article>
+   <aside class="note">
+  <p>For a multi-user call, we can extend that, and have every endpoint connect to every other endpoint. Note that this means that each endpoint is sending multiple copies of the data, which leads to higher CPU and network utilization. Depending on what kind of media you are sending, this becomes unworkable after a certain number of participants, especially if you have mobile clients in the mix.</p>
+  </aside>
+</slide>
+
+<slide>
+<hgroup>
+    <h2>Star: medium N-way call</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/topologyOneToThree.png" alt="Topology diagram: one to three" style='width: 450px;'>
+  </article>
+     <aside class="note">
+  <p>Another option is to designate one endpoint as a "focus", and have that endpoint handle the task of distributing data to the others; the application can choose the most capable endpoint to serve as the focus. This tends to work better than a mesh, but still runs into trouble when handling multiple HD video streams.</p>
+  </aside>
+</slide>
+
+<slide>
+<hgroup>
+    <h2>MCU: large N-way call</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <img src="images/topologyMCU.png" alt="Topology: MCU" style='width: 600px;'>
+  </article>
+    <aside class="note">
+  <p>The most robust solution is to use what's called a MCU, or multipoint control unit. This is a server that's made specifically to do distribution of media, and can handle large numbers of participants; it can also do smart things like selective stream forwarding, mixing of the audio or video, or recording.</p>
+  </aside>
+</slide> -->
+
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>Voice</h2>
+  </hgroup>
+  <aside class="note">
+      <p></p>
+  </aside>
+</slide>
+
+<slide class="segue dark quote nobackground">
+  <aside class="gdbar right bottom"><img src="images/google_developers_icon_128.png"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <q>Voice is just another JS application</q>
+    <div class="author">
+      Henning Schulzrinne<br>
+      &ndash; CTO, US FCC
+    </div>
+  </article>
+  <aside class="note">
+    <p>The impact could be profound.</p>
+    <p>The end of telephony as we know it? Time will tell.</p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Phones and more - beyond browsers</h2>
+  </hgroup>
+  <article>
+  <ul>
+    <li>Easy to interoperate with non-browser devices</li>
+    <ul>
+    <li><a href="https://code.google.com/p/sipml5/" title="">sipML5</a> open source JavaScript SIP client</li>
+      <li><a href="http://phono.com/" title="Phono SDK site">Phono</a> open source JavaScript phone API</li>
+      <li><a href="http://zingaya.com/product/" title="Zingaya SDK site">Zingaya</a> embeddable phone widget</li>
+      </ul>
+    </ul>
+  </article>
+    <aside class="note">
+      <p>WebRTC has been designed with standards in mind, which means it's easy for it to communicate with non-browser devices, like phones. There are a bunch of libraries out there that allow you to do this with just a few lines of code. Let's take a look at a demo from Zingaya.'</p>
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Telephony</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <div class='big'><a href="http://demos.zingaya.com/webrtc-pstn/" title="Zingaya WebRTC PSTN demo">Zingaya PSTN</a></div>
+  </article>
+  <aside class='note'>
+    <p>631-403-9000</p>
+  </aside>
+</slide>
+
+<!-- <slide>
+  <hgroup>
+    <h2>Tethr</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <a href="http://tethr.tumblr.com" title="WebRTC API documentation"><img style="height: 100%" src="images/tethr.jpg" alt="Tethr in action at Google I/O 2012" /></a>
+  </article>
+    <aside class="note">
+      <p>At Google I/O last year Voxeo demonstrated a framework for disaster communications:</p>
+      <p>Set up an OpenBTS cell to enable communications between feature phones and computers via WebRTC.</p>
+      <p>Telephone communication without a carrier!</p>
+    </aside>
+</slide> -->
+
+
+
+<slide class="segue dark nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <hgroup class="auto-fadein">
+    <h2>Developing with WebRTC</h2>
+  </hgroup>
+  <aside class="note">
+    <p>We have tools to help you!</p>
+  </aside>
+</slide>
+
+<slide class="nobackground">
+ <hgroup>
+    <h2>chrome://webrtc-internals</h2>
+    </hgroup>
+     <article class="fill flexbox vcenter">
+    <img src="images/internals.png" alt="chrome://webrtc-internals screenshot" style="border: 1px solid #4444; position: relative; top: -48px; left: -54px;" />
+</article>
+    <aside class="note">
+    <p>One tool</p>
+    </aside>
+</slide>
+
+<slide class="nobackground">
+<hgroup>
+    <h2><a href="https://code.google.com/p/webrtc/source/browse/trunk/samples/apprtc/js/base/adapter.js">adapter.js</a></h2>
+    </hgroup>
+    <article>
+    <p>Lets you use the same code in all browsers:</p>
+      <ul>
+        <li>Removes vendor prefixes</li>
+        <li>Abstracts Chrome/Firefox differences</li>
+        <li>Minimizes effects of spec churn</li>
+       </ul>
+  </article>
+  <aside class="note">
+  </aside>
+</slide>
+
+<slide class="nobackground red">
+    <article class="fill flexbox vcenter">
+      <div class="big"><strong>My brain has already exploded.</strong></div>
+    </article>
+    <aside class="note">
+      At this point, you're probably thinking "my brain has already exploded, and this is just the OVERVIEW talk?!?"
+    </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>JavaScript frameworks</h2>
+  </hgroup>
+  <article>
+    <ul>
+      <li>Video chat:</li>
+      <ul>
+      <li><a href="https://github.com/henrikjoreteg/SimpleWebRTC" title="SimpleWebRTC github repository">SimpleWebRTC</a></li>
+      <li><a href="https://github.com/priologic/easyrtc" title="easyRTC github repository">easyRTC</a></li>
+      <li><a href="https://github.com/webRTC/webRTC.io" title="webRTC.io github repository">webRTC.io</a></li>
+      </ul>
+      <li>Peer-to-peer data:</li>
+      <ul>
+      <li><a href="http://peerjs.com/" title="PeerJS site">PeerJS</a></li>
+      <li><a href="https://github.com/peer5/sharefest" title="Sharefest github repository">Sharefest</a></li>
+      </ul>
+    </ul>
+  </article>
+    <aside class="note">
+      Well, there are plenty of frameworks to help you pick your way through WebRTC, and some libraries to get you going.
+    </aside>
+</slide>
+
+
+<!-- <slide>
+  <hgroup>
+    <h2>SimpleWebRTC</h2>
+    <h3>HTML</h3>
+  </hgroup>
+  <article>
+    <pre class="prettyprint" data-lang="html">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;script src="http://simplewebrtc.com/latest.js"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id="localVideo"&gt;&lt;/div&gt;
+        &lt;div id="remoteVideos"&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  </article>
+</slide> -->
+
+<!-- <slide>
+  <hgroup>
+    <h2>SimpleWebRTC</h2>
+    <h3>Easy peer-to-peer video and audio</h3>
+  </hgroup>
+  <article>
+    <pre class="prettyprint" data-lang="javascript">
+var webrtc = new WebRTC({
+  localVideoEl: 'localVideo',
+  remoteVideosEl: 'remoteVideos',
+  autoRequestMedia: true
+});
+
+webrtc.on('readyToCall', function () {
+    webrtc.joinRoom('My room name');
+});
+</pre>
+  </article>
+</slide>
+
+
+<slide>
+  <hgroup>
+    <h2>PeerJS</h2>
+    <h3>Easy peer-to-peer data</h3>
+  </hgroup>
+  <article>
+    <pre class="prettyprint" data-lang="javascript">
+var peer = new Peer('someid', {key: 'apikey'});
+peer.on('connection', function(conn) {
+  conn.on('data', function(data){
+    // Will print 'hi!'
+    console.log(data);
+  });
+});
+
+// Connecting peer
+var peer = new Peer('anotherid', {key: 'apikey'});
+var conn = peer.connect('someid');
+conn.on('open', function(){
+  conn.send('hi!');
+});
+
+</pre>
+  </article>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Complete services</h2>
+  </hgroup>
+  <article>
+  <ul>
+  <ul>
+    <li><a href="http://www.tokbox.com/" title="Tokbox site">OpenTok</a> (acquired by Telefonica Digital)</li>
+    <li><a href="http://www.vline.com/" title="vLine">vLine</a></li>
+  </ul>
+  <img src="images/networkmap.png" alt="Data center locations" style="" />
+  </article>
+    <aside class="note">
+      <p>Javascript frameworks make writing apps easier, but they don't handle some of the more complicated aspects, like signaling and TURN servers. Fortunately, there are a couple turnkey WebRTC services out there that take care of all of this for you. You can sign up for these services, get an API key, and then make calls using their deployed infrastructure; they also offer UI components that can easily be integrated into your application.</p>
+    </aside>
+</slide> -->
+
+<!-- <slide>
+  <hgroup>
+    <h2>Don't forget the C++!</h2>
+  </hgroup>
+  <article class="flexbox vcenter">
+    <a href="http://www.webrtc.org/webrtc-native-code-package" title="WebRTC API documentation">webrtc.org/webrtc-native-code-package</a>
+  </article>
+    <aside class="note">
+      <p>The WebRTC C++ APIs mean you can build a WebRTC client on a server - check out the example in the webrtc.org source repository.</p>
+    </aside>
+</slide> -->
+
+
+<slide>
+  <hgroup>
+    <h2>More Information</h2>
+  </hgroup>
+  <article>
+  <ul class='tight'>
+    <li>WebRTC and Web Audio resources list: <a href="http://bit.ly/webrtcwebaudio" title="WebRTC and Web Audio standards, documentation, tutorials, demos, samples and applications">bit.ly/webrtcwebaudio</a></li>
+    <li><a href="http://www.youtube.com/watch?v=p2HzZkd2A40" title="Video of Google I/O 2013 WebRTC session on YouTube">Google I/O 2013 WebRTC presentation</a></li>
+    <li>Justin Uberti: <a href="http://www.youtube.com/watch?v=E8C8ouiXHHk" title="Video of Google I/O 2012 presentation">Google I/O 2012 presentation video</a></li>
+    <li>Cullen Jennings video: <a href="http://vimeo.com/47682405" title="IETF and W3C standardisation discussion">HTML5 WebRTC</a></li>
+    <li>HTML5 Rocks:</li>
+    <ul class='tight'>
+      <li><a href="http://www.html5rocks.com/en/tutorials/getusermedia/intro/" title="HTML5 Rocks article about getUserMedia">Capturing audio and video in HTML5</a></li>
+      <li><a href="http://www.html5rocks.com/en/tutorials/webrtc/basics/" title="HTML5 Rocks article about WebRTC">Getting Started With WebRTC</a></li>
+      <li><a href="http://www.html5rocks.com/en/search?q=webrtc" title="HTML5 content tagged WebRTC">Updates</a></li>
+    </ul>
+    <li>...and a book: <a href="http://www.webrtcbook.com" title="WebRTC ebook download">webrtcbook.com</a></li>
+  </ul>
+  </article>
+<aside class="note">
+    <p></p>
+  </aside>
+</slide>
+
+<slide>
+  <hgroup>
+    <h2>Contact Us</h2>
+  </hgroup>
+  <article>
+  <ul>
+    <li><a href="webrtc.org" title="WebRTC project website">webrtc.org</a></li>
+    <li><a href="https://groups.google.com/forum/?fromgroups#!forum/discuss-webrtc" title="WebRTC discussion group">discuss-webrtc</a></li>
+    <li><a href="https://plus.sandbox.google.com/113817074606039822053/posts" title="WebRTC on Google+">+webrtc</a></li>
+      <li><a href="https://twitter.com/webrtc" title="WebRTC on Twitter">@webrtc</a></li>
+      <li>  <a href="http://www.crbug.com/new" title="Report Chrome bugs and feature requests">crbug.com/new</a></li>
+  </ul>
+  </article>
+<aside class="note">
+    <p>webrtc.org has a blog, links to demos, documentation and links to code repositories</p>
+    <p>...and follow Justin Uberti and Serge Lachapelle on Google+</p>
+  </aside>
+</slide>
+
+
+<slide class="segue dark quote nobackground">
+  <aside class="gdbar right bottom"><img src="images/google_developers_icon_128.png"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <q>WebRTC and HTML5 could enable the same transformation for real-time communications that the original browser did for information.</q>
+    <div class="author">
+      Phil Edholm<br>
+      &mdash; NoJitter
+    </div>
+  </article>
+  <aside class="note">
+    <p>So now it's your turn. We've built this technology into the web so that any developer can take advantage of real-time communications, and we can't wait to see what you do with it.</p>
+  </aside>
+</slide>
+
+<!--
+<slide class="nobackground">
+    <article class="fill flexbox vcenter">
+      <div class="big"><a href="http://talky.io/webrtcintro" title="Video chat app">talky.io/webrtcintro</a></div>
+    </article>
+    <aside class="note">
+    <p>WebRTC live!</p>
+    </aside>
+</slide>
+-->
+
+<slide class="thank-you-slide segue nobackground">
+  <aside class="gdbar right"><img src="images/google_developers_icon_128.png"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <h2>&lt;Thank You!&gt;</h2>
+      <p style="font-size:1.2em"><a href="http://webrtcintro.appspot.com" style="color:inherit" title="These slides online">http://webrtcintro.appspot.com</a></p>
+  </article>
+  <p class="auto-fadein" data-config-contact>
+    <!-- populated from slide_config.json -->
+  </p>
+      <aside class="note">
+    Once again, the link to the slides.
+    </aside>
+</slide>
+
+<slide class="logoslide dark nobackground">
+  <article class="flexbox vcenter">
+    <span><img src="images/google_developers_logo_white.png"></span>
+  </article>
+</slide>
+
+<slide class="backdrop"></slide>
+
+</slides>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44413410-1', 'webrtcintro.appspot.com');
+  ga('send', 'pageview');
+
+</script>
+
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>

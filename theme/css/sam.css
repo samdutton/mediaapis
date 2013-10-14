@@ -1,0 +1,135 @@
+.big {
+font-size: 3em;
+line-height: 1.2em;
+}
+.bigger {
+font-size: 4.5em;
+line-height: 1.2em;
+}
+.biggest {
+font-size: 8em;
+line-height: 1.2em;
+}
+
+body.with-notes aside.note {
+background: white;
+color: black;
+-webkit-box-align: start;
+/* display: none !important;  for printing PDF */
+}
+
+div#multipleInputs {
+}
+
+div#multipleInputs > div {
+    float: left;
+    text-align: center;
+    top: 19%;
+    font-weight: bold;
+    line-height: 1.4em;
+    margin: 0 8% 0 7%;
+}
+
+div.author {
+margin: 1.5em 0 0 0;
+}
+
+
+div.editable {
+font-size: 45px;
+font-weight: 600;
+line-height: 130px;
+list-style: none;
+min-height: 500px;
+position: relative;
+top: -42px;
+}
+
+div.editable:focus {
+outline: none;
+}
+
+.editable div {
+display: list-item;
+font-size: 26px;
+font-weight: normal;
+line-height: 1.5em;
+margin: 0 0 0 20px;
+}
+
+.editable div::before {
+content: '·';
+margin-left: -1em;
+position: absolute;
+}
+
+h2 {
+  line-height: 1.2em;
+}
+
+div#multipleInputs img {
+    width: 30%;
+    display: block;
+    float: left;
+    margin: 8% 0 0 0;
+    top: 55%;
+}
+
+li {
+  line-height: 1.5em;
+}
+
+ol li {
+margin: 0 0 1.4em 0;
+}
+
+ul li {
+list-style: square;
+margin: 0 0 1.4em 0;
+}
+
+ul.faded li {
+opacity: 0.3;
+}
+
+ul.faded li.built {
+opacity: 1;
+}
+
+ol.tight li, ul.tight li  {
+line-height: 1.2em;
+margin: 0 0 0.7em -1.5px;
+padding: 0 0 0 -1.8px;
+}
+
+ol {
+list-style: decimal;
+margin: 0 0 0 1.4em;
+}
+
+.note p {
+color: black;
+font-size: 24px;
+line-height: 1.4em;
+margin: 0 0 1em 0;
+}
+
+.demoSubtitle {
+padding-left: 10px;
+}
+
+q {
+color: white;
+}
+
+slides > slide:not(.nobackground):after {
+  content: none;
+}
+
+slides > slide.title-slide:after {
+background: none;
+}
+
+strong {
+font-weight: bold;
+}

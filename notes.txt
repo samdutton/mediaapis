@@ -1,0 +1,25 @@
+Demos
+
+simpl.info/gum
+- chrome
+- firefox
+- opera
+- chrome on galaxy
+- firefox on nexus
+
+http://idevelop.github.com/ascii-camera/
+
+Show MediaStream
+- show getVideoTracks()
+- add dodgy constraint and show baffling error message
+
+
+<a href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediastreamconstraints" title="W3C Editor's Draft">Media Capture and Streams</a>
+
+Constraints
+
+<a href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#constraint-registrations" title="">Media Capture and Streams documentation</a>
+
+➔➡
+
+get easyRTC running

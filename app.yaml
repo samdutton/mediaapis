@@ -1,0 +1,31 @@
+application: mediaapis
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /
+  static_files: index.html
+  upload: index\.html
+  http_headers:
+    Access-Control-Allow-Origin: '*'
+
+- url: /slide_config\.js
+  static_files: slide_config.js
+  upload: slide_config\.js
+
+- url: /gowebrtc\.pdf
+  static_files: gowebrtc.pdf
+  upload: gowebrtc\.pdf
+
+- url: /js
+  static_dir: js
+
+- url: /theme
+  static_dir: theme
+
+- url: /images
+  static_dir: images
+
+
