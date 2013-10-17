@@ -1,9 +1,9 @@
 var SLIDE_CONFIG = {
   // Slide settings
   settings: {
-    title: 'WebRTC',
-    subtitle: 'Plugin-free realtime communication',
-    eventTitle: '',
+    title: 'Media APIs for the multi-platform Web',
+    subtitle: 'Codemotion Madrid 2013',
+    eventTitle: '@sw12',
     useBuilds: true, // Default: true. False will turn off slide animation builds.
     usePrettify: true, // Default: true
     enableSlideAreas: true, // Default: true. False turns off the click areas on either slide of the slides.
@@ -20,18 +20,12 @@ var SLIDE_CONFIG = {
   // Author information
   presenters: [
   {
-    name: "Chris Wilson",
-    company: "Google Chrome Developer Advocate",
-    gplus: "http://plus.google.com/+ChrisWilson",
-    twitter: "cwilso",
-    www: "http://cwilso.com",
-    github: "http://github.com/cwilso"
-  //   name: 'Sam Dutton',
-  //   company: 'Developer Advocate, Google Chrome',
-  //   gplus: 'http://plus.samdutton.com',
-  //   twitter: '@sw12',
-  //   www: 'http://www.samdutton.com',
-  //   github: 'http://github.com/samdutton'
+    name: 'Sam Dutton',
+    company: 'Developer Advocate, Google Chrome',
+    gplus: 'http://plus.samdutton.com',
+    twitter: '@sw12',
+    www: 'http://www.samdutton.com',
+    github: 'http://github.com/samdutton'
   }]
 };
 

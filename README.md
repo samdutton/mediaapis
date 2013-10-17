@@ -1,11 +1,14 @@
-<<<<<<< HEAD
-gowebrtc
-========
-
-WebRTC presentation
-=======
-mediaapis
-=========
-
 Media APIs for the multi-platform Web
->>>>>>> 872c2f5d99f255d8b1d6bd43812624c0ff204f03
+=====================================
+
+Presentation slides:
+
+* WebRTC: what's new and what's next
+* EME: what is it and how can I use it?
+* Media Source Extensions: for adaptive streaming, time shifting and more
+* Web Audio: sophisticated audio
+* <video> and <audio> update
+* Transcripts, captions and the track element: deep linking and deep search
+* Working with Web Components
+* State of the codecs
+* Best practice for mobile platforms
