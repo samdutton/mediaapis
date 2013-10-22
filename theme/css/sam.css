@@ -19,7 +19,7 @@ body.with-notes aside.note {
 background: white;
 color: black;
 -webkit-box-align: start;
-/* display: none !important;  for printing PDF */
+display: none !important;  /*for printing PDF*/
 }
 
 div#multipleInputs {
@@ -126,10 +126,10 @@ q {
 color: white;
 }
 
-slides > slide:not(.nobackground):after {
+/*slides > slide:not(.nobackground):after {
   content: none;
 }
-
+*/
 slides > slide.title-slide:after {
 background: none;
 }
