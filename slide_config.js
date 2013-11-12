@@ -2,8 +2,8 @@ var SLIDE_CONFIG = {
   // Slide settings
   settings: {
     title: 'Media APIs for the multi-platform Web',
-    subtitle: 'Codemotion Madrid 2013',
-    eventTitle: '@sw12',
+    subtitle: 'Chrome Developer Summit',
+    eventTitle: '',
     useBuilds: true, // Default: true. False will turn off slide animation builds.
     usePrettify: true, // Default: true
     enableSlideAreas: true, // Default: true. False turns off the click areas on either slide of the slides.
@@ -19,13 +19,19 @@ var SLIDE_CONFIG = {
 
   // Author information
   presenters: [
-  {
+    {
+      name: 'Jan Linden',
+      company: 'Senior Product Manager, Google',
+      gplus: 'https://plus.google.com/101097675148849633109/posts'
+    },
+    {
     name: 'Sam Dutton',
     company: 'Developer Advocate, Google Chrome',
     gplus: 'http://plus.samdutton.com',
     twitter: '@sw12',
     www: 'http://www.samdutton.com',
     github: 'http://github.com/samdutton'
-  }]
+  }
+  ]
 };
 

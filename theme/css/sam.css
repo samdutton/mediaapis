@@ -1,3 +1,8 @@
+
+.biggish {
+font-size: 1.4em;
+line-height: 1.5em;
+}
 .quiteBig {
 font-size: 2em;
 line-height: 1.2em;
@@ -19,25 +24,33 @@ body.with-notes aside.note {
 background: white;
 color: black;
 -webkit-box-align: start;
-display: none !important;  /*for printing PDF*/
+/* display: none !important;  /*for printing PDF*/
 }
+
+/*code {
+  font-family: Envy Code R, monospace;
+}*/
 
 div#multipleInputs {
 }
 
 div#multipleInputs > div {
-    float: left;
-    text-align: center;
-    top: 19%;
-    font-weight: bold;
-    line-height: 1.4em;
-    margin: 0 8% 0 7%;
+float: left;
+text-align: center;
+top: 19%;
+font-weight: bold;
+line-height: 1.4em;
+margin: 0 8% 0 7%;
 }
 
 div.author {
 margin: 1.5em 0 0 0;
 }
 
+div.demoLabel {
+font-weight: bold;
+margin: 0 0 2em 0;
+}
 
 div.editable {
 font-size: 45px;
@@ -68,19 +81,19 @@ position: absolute;
 }
 
 h2 {
-  line-height: 1.2em;
+line-height: 1.2em;
 }
 
 div#multipleInputs img {
-    width: 30%;
-    display: block;
-    float: left;
-    margin: 8% 0 0 0;
-    top: 55%;
+width: 30%;
+display: block;
+float: left;
+margin: 8% 0 0 0;
+top: 55%;
 }
 
 li {
-  line-height: 1.5em;
+line-height: 1.5em;
 }
 
 ol li {
@@ -122,21 +135,30 @@ margin: 0 0 1em 0;
 padding-left: 10px;
 }
 
+/*pre {
+  font-family: Envy Code R, monospace;
+}*/
+
 q {
 color: white;
 }
 
-/*slides > slide:not(.nobackground):after {
-  content: none;
+slides > slide:not(.nobackground):after {
+content: simpl.info/media;
 }
-*/
+
 slides > slide.title-slide:after {
 background: none;
 }
 
 slides > slide:not(.nobackground):before {
-  content: "@sw12";
+content: "@sw12";
 }
+
+slides > slide:not(.nobackground):after {
+content: "simpl.info/media";
+}
+
 
 strong {
 font-weight: bold;
